@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Stay Safe">
+<title>Stay Safe by Christian Piña</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#000;--card:transparent;--line:#333;--mut:#8c8c8c;--fg:#fff}
+html,body{background:var(--bg);color:var(--fg);font-family:'Montserrat',system-ui,sans-serif;font-weight:400}
+body{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:110px;padding-top:env(safe-area-inset-top)}
+@media(min-width:760px){body{max-width:640px}.panel{max-width:640px!important}}
+button{font-family:inherit}
+a{color:inherit}
+.bar{display:flex;justify-content:space-between;gap:6px;padding:12px 16px 0}
+.bar button{background:none;border:1px solid #fff;color:var(--fg);border-radius:0;padding:8px 10px;font:500 10px 'Montserrat';letter-spacing:.12em;text-transform:uppercase;cursor:pointer;flex:1}
+header{padding:14px 14px 6px}
+header img{width:100%;display:block}
+.seg{display:flex;margin:14px 16px;border:1px solid var(--fg)}
+.seg button{flex:1;padding:12px;background:none;color:var(--fg);border:0;font:500 13px 'Montserrat';letter-spacing:.2em;text-transform:uppercase;cursor:pointer}
+.seg button.on{background:var(--fg);color:#000}
+.wrap{padding:0 16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:6px 0 18px}
+.stat{border-top:2px solid #fff;text-align:left;padding:10px 4px 0}
+.stat b{display:block;font-size:34px;font-weight:300}
+.stat span{font-size:10px;color:var(--mut);letter-spacing:.1em;text-transform:uppercase}
+.alert{background:#fff;color:#000;padding:12px 14px;margin-bottom:14px;font-size:13px}
+.alert h3{font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.alert div{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid rgba(0,0,0,.18);cursor:pointer}
+.alert div:first-of-type{border-top:0}
+input.search{width:100%;background:transparent;border:0;border-bottom:1px solid #fff;color:var(--fg);padding:12px 0;font:400 14px 'Montserrat';margin-bottom:12px;border-radius:0}
+.filters{display:flex;gap:4px;overflow-x:auto;margin-bottom:6px}
+.filters button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:7px 4px;margin-right:10px;font:600 10px 'Montserrat';letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;cursor:pointer}
+.filters button.on{border-bottom-color:#fff;color:#fff}
+.client{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:16px 2px;cursor:pointer}
+.av{width:46px;height:46px;border:2px solid var(--fg);display:grid;place-items:center;font-size:20px;font-weight:300;flex:none}
+.client .i{flex:1;min-width:0}
+.client .i b{display:block;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client .i span{font-size:12px;color:var(--mut)}
+.chip{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border:1px solid var(--fg);white-space:nowrap;font-weight:600}
+.chip.warn{background:var(--fg);color:#000}
+.chip.bad,.chip.arch{border-style:dashed;color:var(--mut);border-color:var(--mut)}
+.chip.frozen{border-style:double;border-width:3px;padding:3px 9px}
+.fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom));left:16px;right:16px;max-width:488px;margin:0 auto;background:var(--fg);color:#000;border:0;padding:17px;font:600 12px 'Montserrat';letter-spacing:.16em;text-transform:uppercase;cursor:pointer;box-shadow:0 0 0 8px #000;z-index:5}
+.panel{position:fixed;inset:0;background:#000;overflow-y:auto;z-index:10;max-width:520px;margin:0 auto;padding-bottom:50px}
+.panel.top2{z-index:20}
+.top{display:flex;align-items:center;gap:10px;padding:14px 16px;padding-top:calc(14px + env(safe-area-inset-top));position:sticky;top:0;background:#000;border-bottom:1px solid var(--line);z-index:2}
+.top button{background:none;border:1px solid var(--line);color:var(--fg);width:38px;height:38px;font-size:18px;cursor:pointer;flex:none}
+.top h2{font-weight:600;font-size:15px;text-transform:uppercase;letter-spacing:.08em;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:4px;padding:10px 16px 4px;overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mut);padding:9px 6px;margin-right:8px;font:600 11px 'Montserrat';letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;cursor:pointer}
+.tabs button.on{border-bottom-color:#fff;color:#fff}
+.sec{padding:0 16px}
+.row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row span:first-child{color:var(--mut);font-size:11px;letter-spacing:.08em;text-transform:uppercase;flex:none}
+.row span:last-child{text-align:right;min-width:0;overflow-wrap:anywhere}
+.btn{display:block;width:100%;text-align:center;background:none;color:var(--fg);border:1px solid var(--fg);padding:13px;font:600 11px 'Montserrat';letter-spacing:.14em;text-transform:uppercase;margin-top:12px;cursor:pointer;text-decoration:none}
+.btn.solid{background:var(--fg);color:#000}
+.btn.ghost{border-color:var(--line);color:var(--mut)}
+.pay{border:1px solid var(--line);padding:13px;margin-top:10px}
+.pay.cur{border-color:#fff}
+.pay .h{display:flex;justify-content:space-between;font-weight:600;align-items:center;gap:8px}
+.pay .s{font-size:12px;color:var(--mut);margin-top:4px}
+.pay .acts{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.x{background:none;border:0;color:var(--mut);font-size:12px;text-decoration:underline;cursor:pointer;padding:0}
+.prog{font-size:14px;line-height:1.55;margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bar2{height:6px;background:var(--line);margin:10px 0 4px}
+.bar2 i{display:block;height:100%;background:var(--fg)}
+.note{border-left:2px solid var(--fg);padding:4px 0 4px 12px;margin:14px 0}
+.note small{color:var(--mut);font-size:11px}
+.note p{font-size:14px;margin-top:3px;overflow-wrap:anywhere;white-space:pre-wrap}
+label.l{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:16px 0 6px}
+input,select,textarea{width:100%;background:transparent;border:1px solid var(--line);color:var(--fg);padding:12px;font:400 14px 'Montserrat';color-scheme:dark;border-radius:0}
+select{background:#000}
+textarea{min-height:90px;resize:vertical}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.chips button{background:none;border:1px solid var(--line);color:var(--fg);padding:7px 12px;font:500 11px 'Montserrat';cursor:pointer}
+.hint{font-size:12px;color:var(--mut);margin-top:8px;line-height:1.5}
+.cmp{position:relative;width:100%;aspect-ratio:3/4;border:1px solid var(--line);overflow:hidden;background:#111;user-select:none;touch-action:pan-y}
+.cmp .ly{position:absolute;inset:0}
+.cmp img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.cmp .line{position:absolute;top:0;bottom:0;width:2px;background:#fff;pointer-events:none}
+.cmp .knob{position:absolute;top:50%;width:40px;height:40px;margin:-20px;background:#fff;color:#000;display:grid;place-items:center;font-size:14px;font-weight:700;pointer-events:none}
+.tag{position:absolute;top:10px;font-size:10px;letter-spacing:.14em;background:#000;border:1px solid #fff;padding:4px 9px;z-index:2}
+.ph{display:grid;place-items:center;height:100%;color:var(--mut);font-size:12px}
+.views{display:flex;gap:6px;margin-top:6px}
+.views button{flex:1;background:none;border:1px solid var(--line);color:var(--mut);padding:10px 2px;font:600 10px 'Montserrat';letter-spacing:.04em;text-transform:uppercase;cursor:pointer}
+.views button.on{border-color:var(--fg);color:var(--fg)}
+.empty{text-align:center;color:var(--mut);padding:26px 0;font-size:13px}
+.demo{font-size:11px;color:var(--mut);text-align:center;padding:14px 16px}
+.login{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:30px 24px}
+.login img{width:100%;display:block;margin-bottom:26px}
+.login .err{font-size:13px;margin-top:12px;text-align:center;min-height:18px}
+.chart{border:1px solid var(--line);padding:10px;margin-top:12px}
+.chart svg{width:100%;height:auto;display:block}
+.delta{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.delta span:first-child{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:130px;margin-top:12px;border-bottom:1px solid var(--line);padding:0 2px}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bars i{display:block;width:100%;background:var(--fg);min-height:2px}
+.bars small{font-size:9px;color:var(--mut);margin-bottom:4px}
+.lab{display:flex;gap:8px;margin-top:6px}
+.lab span{flex:1;text-align:center;font-size:10px;color:var(--mut);text-transform:uppercase}
+.sh{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin:26px 0 4px;padding-top:14px;border-top:2px solid #fff}
+.pill{font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);color:var(--mut);padding:3px 8px}
+#busy{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:50;display:grid;place-items:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:20px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#fff;color:#000;padding:12px 18px;font-size:13px;z-index:60;max-width:90%;text-align:center}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="layer"></div>
+<script src="config.js"></script>
+<script>
+/* ================= Utilidades ================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const DAY=864e5; const today=new Date(); today.setHours(0,0,0,0);
+const off=n=>new Date(today.getTime()+n*DAY);
+const iso=d=>{const x=new Date(d);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const P=s=>{const[a,b,c]=String(s).split('-').map(Number);return new Date(a,b-1,c)};
+const fmt=s=>P(s).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'numeric'});
+const monthLabel=m=>{const[y,mo]=m.split('-');return new Date(y,mo-1,1).toLocaleDateString('es-MX',{month:'long',year:'numeric'})};
+const money=n=>'$'+Number(n||0).toLocaleString('es-MX');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const linkify=t=>esc(t).replace(/(https?:\/\/[^\s<]+)/g,u=>`<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+const num=v=>{const n=parseFloat(v);return isNaN(n)?null:n};
+const uid=()=>Math.random().toString(36).slice(2)+Date.now().toString(36);
+const waNum=t=>{const d=String(t||'').replace(/\D/g,'');return d.length===10?'52'+d:d};
+
+/* ================= Capa de datos ================= */
+let PW='',ROL='admin';
+const DEMO=!API_URL;
+const isAdmin=()=>ROL==='admin';
+async function api(action,payload={}){
+  if(DEMO)return mock(action,{pw:PW,...payload});
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,pw:PW,...payload})});
+  const j=await r.json();
+  if(!j.ok)throw new Error(j.error||'Error');
+  return j.data;
+}
+
+/* --- Modo demo (datos ficticios en memoria) --- */
+const sil=(w,bg)=>'data:image/svg+xml;utf8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="${bg}"/><circle cx="150" cy="95" r="36" fill="#fff" opacity=".85"/><path d="M${150-w} 390 Q${150-w+6} 175 150 152 Q${150+w-6} 175 ${150+w} 390Z" fill="#fff" opacity=".85"/></svg>`);
+const mock=(()=>{
+  const PL=[['p1','Entrenamiento',350,'NO'],['p2','Alimentación',350,'NO'],['p3','Entrenamiento + alimentación',500,'NO'],['p4','Presencial',3000,'SI']].map(([id,nombre,precio,c])=>({id,nombre,precio,dias:30,congelable:c,activo:'SI'}));
+  const mk=(id,o)=>({id,telefono:'',ciudad:'Hermosillo',profesion:'',edad:'',estatura:'',peso:'',diagnostico:'Ninguno',alergias:'Ninguna',lesiones:'Ninguna',indicaciones:'—',medicamentos:'—',objetivo:'',lugar:'Gym',activo:'SI',creado:iso(off(-120)),token:'demo'+id+'0123456789abcdefghij',...o});
+  const pays=(cid,endOff,plan,n)=>{const pr=PL.find(p=>p.nombre===plan).precio;return Array.from({length:n},(_,i)=>{const e=endOff-30*(n-1-i),s=e-30;return{id:uid(),clienteId:cid,fecha:iso(off(s)),monto:pr,metodo:i%2?'Transferencia':'Efectivo',inicio:iso(off(s)),fin:iso(off(e)),plan}})};
+  const mes=iso(today).slice(0,7);
+  const st={
+    F:{clientes:[
+      mk('f1',{nombre:'Mariana López Ruiz',telefono:'6621234567',profesion:'Maestra',edad:32,estatura:1.65,peso:68,lesiones:'Esguince de tobillo (2023)',indicaciones:'Evitar impacto alto',medicamentos:'Proteína, creatina',objetivo:'Tonificar y bajar 6 kg'}),
+      mk('f2',{nombre:'Fernanda Aguirre',profesion:'Contadora',edad:28,estatura:1.60,peso:61,diagnostico:'Hipotiroidismo controlado',alergias:'Nueces',indicaciones:'Control médico cada 6 meses',medicamentos:'Levotiroxina',objetivo:'Ganar glúteo',lugar:'Casa'}),
+      mk('f3',{nombre:'Daniela Cota',ciudad:'Guaymas',profesion:'Enfermera',edad:35,estatura:1.68,peso:74,alergias:'Penicilina',lesiones:'Fractura de muñeca (2021)',objetivo:'Bajar grasa'}),
+      mk('f4',{nombre:'Sofía Valenzuela',profesion:'Diseñadora',edad:25,estatura:1.58,peso:55,objetivo:'Fuerza general'})],
+      pagos:[...pays('f1',18,'Entrenamiento + alimentación',4),...pays('f2',5,'Alimentación',2),...pays('f3',-6,'Entrenamiento',6),...pays('f4',26,'Entrenamiento',1)],
+      notas:[{id:uid(),clienteId:'f1',fecha:iso(off(-60)),texto:'Muy constante. Subir carga en pierna.'},{id:uid(),clienteId:'f1',fecha:iso(off(-10)),texto:'Ya baja 3 kg. Ajustar cena.'}],
+      medidas:[[-90,71,82,104,92],[-60,70,80.5,103,91.5],[-30,68.8,79,101.5,91],[-3,68,77.5,100,90.5]].map(([d,p,c,ca,pe])=>({id:uid(),clienteId:'f1',fecha:iso(off(d)),peso:p,cintura:c,cadera:ca,pecho:pe,brazo:'',pierna:'',grasa:''})),
+      fotos:[],pausas:[],
+      programas:[
+        {id:uid(),clienteId:'f1',mes,tipo:'entrenamiento',titulo:'Rutina A · Pierna y glúteo',contenido:'Sentadilla goblet 4x12\nHip thrust 4x10\nZancadas 3x12 c/pierna\nPlancha 3x40s\nVideo: https://youtu.be/demo1',creado:iso(today)},
+        {id:uid(),clienteId:'f1',mes,tipo:'alimentacion',titulo:'Plan 1,700 kcal',contenido:'Desayuno: huevos + avena\nComida: pollo, arroz y verduras\nCena: yogurt griego + fruta\nAgua: 2.5 L al día',creado:iso(today)},
+        {id:uid(),clienteId:'f1',mes:iso(off(-35)).slice(0,7),tipo:'entrenamiento',titulo:'Rutina base',contenido:'Full body 3x semana',creado:iso(off(-35))}]},
+    M:{clientes:[
+      mk('m1',{nombre:'Carlos Mendoza',profesion:'Ingeniero',edad:38,estatura:1.78,peso:92,diagnostico:'Hipertensión leve',lesiones:'Hernia lumbar L5',indicaciones:'Sin peso muerto pesado',medicamentos:'Losartán',objetivo:'Bajar 10 kg'}),
+      mk('m2',{nombre:'Luis Ortega',ciudad:'Empalme',profesion:'Abogado',edad:30,estatura:1.74,peso:80,lesiones:'Hombro derecho (tendinitis)',indicaciones:'Evitar press militar',medicamentos:'Whey, creatina',objetivo:'Ganar masa muscular',lugar:'Casa'})],
+      pagos:[...pays('m1',3,'Presencial',5),...pays('m2',21,'Entrenamiento',3)],notas:[],medidas:[],fotos:[],
+      pausas:[{id:uid(),clienteId:'m1',inicio:iso(off(-2)),dias:10,motivo:'Viaje'}],programas:[]}
+  };
+  const common={planes:PL,config:{negocio:'Stay Safe by Christian Piña',telefono:'6620000000',correo:'correo@ejemplo.com',instagram:'chrisstianpina',instagram_trabajo:'Stayssafee',banco:'Banco Demo',titular:'Titular de Ejemplo',cuenta:'0000 0000 0000 0000',mensaje_extra:'¡Gracias por entrenar conmigo! 💪'},
+    ejercicios:[{id:uid(),nombre:'Sentadilla goblet',grupo:'Pierna',enlace:'https://youtu.be/demo1'},{id:uid(),nombre:'Hip thrust',grupo:'Glúteo',enlace:'https://youtu.be/demo2'},{id:uid(),nombre:'Remo con mancuerna',grupo:'Espalda',enlace:'https://youtu.be/demo3'},{id:uid(),nombre:'Plancha',grupo:'Core',enlace:'https://youtu.be/demo4'}]};
+  const store={};
+  [['frente',-90,60,-3,44],['espalda',-90,62,-3,46]].forEach(([v,d1,w1,d2,w2])=>{
+    [[d1,w1,'#2b2b2b'],[d2,w2,'#151515']].forEach(([d,w,bg])=>{const id=uid();store[id]=sil(w,bg);st.F.fotos.push({id,clienteId:'f1',fecha:iso(off(d)),vista:v,archivoId:id})});
+  });
+  const by=t=>{for(const g of ['F','M']){const c=st[g].clientes.find(x=>x.token===t);if(c)return[g,c]}return[]};
+  const up=(arr,o)=>{const i=arr.findIndex(x=>x.id===o.id);if(i>=0)arr[i]={...arr[i],...o};else arr.push({...o,id:uid()})};
+  return async(a,p)=>{
+    await new Promise(r=>setTimeout(r,120));
+    const s=st[p.g];
+    if(a==='portal'||a==='portalFoto'){
+      const[g,c]=by(p.token); if(!c)throw new Error('Enlace no válido o desactivado');
+      const S2=st[g];
+      if(a==='portalFoto')return store[S2.fotos.find(f=>f.id===p.id&&f.clienteId===c.id).archivoId];
+      const ps=S2.pagos.filter(x=>x.clienteId===c.id).sort((x,y)=>P(y.fin)-P(x.fin)),l=ps[0];
+      const extra=l?S2.pausas.filter(z=>z.clienteId===c.id&&z.inicio>=l.inicio).reduce((x,z)=>x+z.dias,0):0;
+      return JSON.parse(JSON.stringify({nombre:c.nombre,objetivo:c.objetivo,plan:l?l.plan:'',vence:l?iso(new Date(P(l.fin).getTime()+extra*DAY)):'',programas:S2.programas.filter(x=>x.clienteId===c.id),medidas:S2.medidas.filter(x=>x.clienteId===c.id),fotos:S2.fotos.filter(x=>x.clienteId===c.id).map(f=>({id:f.id,fecha:f.fecha,vista:f.vista})),negocio:{nombre:common.config.negocio,telefono:common.config.telefono,instagram:common.config.instagram_trabajo}}));
+    }
+    if(a==='login')return {rol:p.pw==='asistente'?'asistente':'admin'};
+    const adm=p.pw!=='asistente';
+    if(!adm&&/^(del|savePlan|saveConfig)/.test(a)&&a!=='delEjercicio_')throw new Error('Esta acción solo la puede hacer Christian.');
+    switch(a){
+      case 'all':return JSON.parse(JSON.stringify({...s,...common}));
+      case 'saveCliente':{const c={...p.cliente};if(c.id)up(s.clientes,c);else{c.id=uid();c.creado=iso(today);c.activo=c.activo||'SI';c.token=uid()+uid();s.clientes.push(c)}return c}
+      case 'tokenCliente':{const c=s.clientes.find(x=>x.id===p.id);if(p.regen)c.token=uid()+uid();return {token:c.token}}
+      case 'addPago':s.pagos.push({id:uid(),...p.pago});return {};
+      case 'delPago':s.pagos=s.pagos.filter(x=>x.id!==p.id);return {};
+      case 'addPausa':s.pausas.push({id:uid(),...p.pausa});return {};
+      case 'delPausa':s.pausas=s.pausas.filter(x=>x.id!==p.id);return {};
+      case 'addNota':s.notas.push({id:uid(),...p.nota});return {};
+      case 'addMedida':s.medidas.push({id:uid(),...p.medida});return {};
+      case 'delMedida':s.medidas=s.medidas.filter(x=>x.id!==p.id);return {};
+      case 'savePrograma':{const o=p.programa;if(o.id)up(s.programas,o);else s.programas.push({...o,id:uid(),creado:iso(today)});return {}}
+      case 'delPrograma':s.programas=s.programas.filter(x=>x.id!==p.id);return {};
+      case 'savePlan':up(common.planes,{activo:'SI',...p.plan});return {};
+      case 'saveConfig':Object.assign(common.config,p.config);return {};
+      case 'saveEjercicio':up(common.ejercicios,p.ejercicio);return {};
+      case 'delEjercicio':common.ejercicios=common.ejercicios.filter(x=>x.id!==p.id);return {};
+      case 'addFoto':{const id=uid();store[id]=p.data;s.fotos.push({id,clienteId:p.clienteId,fecha:p.fecha,vista:p.vista,archivoId:id});return {}}
+      case 'getFoto':return store[s.fotos.find(f=>f.id===p.id).archivoId];
+    }
+  };
+})();
+
+/* ================= Estado ================= */
+const KEY={f:'F',m:'M'};
+const VIEWS=[['frente','Frente'],['espalda','Espalda'],['perfil_der','Perfil der.'],['perfil_izq','Perfil izq.']];
+const FIELDS=[['nombre','Nombre completo','text'],['telefono','WhatsApp (10 dígitos)','tel'],['ciudad','Ciudad','text'],['profesion','Profesión','text'],['edad','Edad','number'],['estatura','Estatura (m)','number'],['peso','Peso (kg)','number'],['diagnostico','Diagnóstico médico','text'],['alergias','Alergias','text'],['lesiones','Lesiones / fracturas','text'],['indicaciones','Indicaciones médicas','text'],['medicamentos','Medicamentos y/o suplementos','text'],['objetivo','Objetivo','text']];
+const UNITS={edad:' años',estatura:' m',peso:' kg'};
+const MED=[['peso','Peso','kg'],['cintura','Cintura','cm'],['cadera','Cadera','cm'],['pecho','Pecho','cm'],['brazo','Brazo','cm'],['pierna','Pierna','cm'],['grasa','% Grasa','%']];
+const S={g:'f',filter:'todas',q:'',id:null,tab:'ficha',view:'frente',a:null,b:null,slide:50};
+const DB={f:null,m:null}; const cache={};
+const D=()=>DB[S.g];
+const cl=id=>D().clientes.find(c=>c.id===id);
+const paysOf=id=>D().pagos.filter(p=>p.clienteId===id);
+const cfg=()=>(D()&&D().config)||{};
+
+function planOf(c){
+  const ps=paysOf(c.id); if(!ps.length)return null;
+  const last=[...ps].sort((a,b)=>P(b.fin)-P(a.fin)||P(b.fecha)-P(a.fecha))[0];
+  const extra=D().pausas.filter(z=>z.clienteId===c.id&&P(z.inicio)>=P(last.inicio)).reduce((a,z)=>a+Number(z.dias||0),0);
+  return{last,extra,end:new Date(P(last.fin).getTime()+extra*DAY)};
+}
+const pausedNow=c=>D().pausas.find(z=>z.clienteId===c.id&&P(z.inicio)<=today&&today<new Date(P(z.inicio).getTime()+Number(z.dias)*DAY));
+function status(c){
+  if(c.activo==='NO')return{k:'arch',t:'Archivada',days:-9999};
+  const pl=planOf(c);
+  if(!pl)return{k:'bad',t:'Sin pago',days:-9999,end:null};
+  const days=Math.round((pl.end-today)/DAY);
+  if(pausedNow(c))return{k:'frozen',t:'Congelada',days,end:pl.end,pl};
+  if(days<0)return{k:'bad',t:'Vencida',days,end:pl.end,pl};
+  if(days<=7)return{k:'warn',t:days===0?'Vence hoy':'Vence en '+days+' d',days,end:pl.end,pl};
+  return{k:'ok',t:'Activa',days,end:pl.end,pl};
+}
+function monthsWith(c){
+  const ps=paysOf(c.id); if(!ps.length)return 0;
+  const s=ps.map(p=>P(p.inicio)).sort((a,b)=>a-b)[0];
+  return Math.max(1,Math.round((today-s)/DAY/30)+1);
+}
+function cobroMsg(c){
+  const s=status(c),f=cfg(),first=c.nombre.split(' ')[0];
+  const plan=s.pl?s.pl.last.plan:'',pl=D().planes.find(p=>p.nombre===plan),precio=pl?pl.precio:(s.pl?s.pl.last.monto:'');
+  let m=`Hola ${first} 👋, tu plan${plan?' de '+plan:''} con Christian Piña ${s.end?(s.days<0?'venció el '+fmt(iso(s.end)):'vence el '+fmt(iso(s.end))):'está pendiente de pago'}.`;
+  if(precio)m+=`\nPara renovar (${money(precio)}):`;
+  if(f.banco)m+=`\n🏦 ${f.banco}`; if(f.titular)m+=`\n👤 ${f.titular}`; if(f.cuenta)m+=`\n💳 ${f.cuenta}`;
+  m+='\nCuando hagas tu pago, mándame el comprobante 🙌';
+  if(f.mensaje_extra)m+='\n'+f.mensaje_extra;
+  return m;
+}
+
+/* ================= UI helpers ================= */
+function toast(m){const t=document.createElement('div');t.id='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
+function busy(m){let b=$('#busy');if(!m){b&&b.remove();return}if(!b){b=document.createElement('div');b.id='busy';document.body.appendChild(b)}b.textContent=m}
+async function run(msg,fn){busy(msg);try{await fn();return true}catch(e){toast(e.message||'Error de conexión');return false}finally{busy()}}
+const reload=async()=>{DB[S.g]=await api('all',{g:KEY[S.g]})};
+const mutate=(msg,action,payload)=>run(msg,async()=>{await api(action,{g:KEY[S.g],...payload});await reload()});
+function modal(title,inner,onSave,label='Guardar'){
+  const d=document.createElement('div');d.className='panel top2';
+  d.innerHTML=`<div class="top"><button id="x">×</button><h2>${title}</h2></div><div class="sec">${inner}<button class="btn solid" id="ok" style="margin-top:22px">${label}</button></div>`;
+  document.body.appendChild(d);
+  $('#x',d).onclick=()=>d.remove();
+  $('#ok',d).onclick=async()=>{const r=await onSave(d);if(r!==false)d.remove()};
+  return d;
+}
+function confirmBox(text,onYes){
+  const d=document.createElement('div');d.className='panel top2';d.style.background='rgba(0,0,0,.94)';
+  d.innerHTML=`<div class="sec" style="padding-top:32vh;text-align:center"><p style="font-size:15px;line-height:1.5">${text}</p><button class="btn solid" id="y">Sí, continuar</button><button class="btn ghost" id="n">Cancelar</button></div>`;
+  document.body.appendChild(d);
+  $('#n',d).onclick=()=>d.remove();
+  $('#y',d).onclick=async()=>{d.remove();await onYes()};
+}
+function sheet(title,html,bind){
+  const d=document.createElement('div');d.className='panel top2';
+  d.innerHTML=`<div class="top"><button id="x">←</button><h2>${title}</h2></div><div class="sec" id="sb" style="padding-top:8px"></div>`;
+  document.body.appendChild(d);
+  $('#x',d).onclick=()=>{d.remove();if($('#hm'))renderList(false)};
+  const paint=()=>{$('#sb',d).innerHTML=html();bind(d,paint)};
+  paint();return d;
+}
+const chip=s=>`<span class="chip ${s.k}">${s.t}</span>`;
+const field=(id,l,t='text',v='',ex='')=>`<label class="l">${l}</label><input id="${id}" type="${t}" ${t==='number'?'step="any" inputmode="decimal"':''} value="${esc(v)}" ${ex}>`;
+
+/* ================= Login ================= */
+function renderLogin(msg=''){
+  $('#layer').innerHTML='';
+  $('#app').innerHTML=`<div class="login"><img src="logo.png" alt="Stay Safe by Christian Piña"><label class="l" style="margin-top:0">Contraseña</label><input id="pw" type="password" autocomplete="current-password" placeholder="••••••••"><button class="btn solid" id="go">Entrar</button><div class="err" id="err">${esc(msg)}</div>${DEMO?'<p class="demo">Modo demo · datos ficticios<br>Cualquier contraseña entra como Christian · escribe <b>asistente</b> para ver el acceso de asistente</p>':''}</div>`;
+  const go=async()=>{
+    PW=$('#pw').value; if(!PW)return;
+    busy('Entrando…');
+    try{const r=await api('login');ROL=r.rol||'admin';try{sessionStorage.setItem('pw',PW)}catch{}busy();await showHome(true)}
+    catch(e){busy();PW='';$('#err').textContent=e.message||'No se pudo conectar'}
+  };
+  $('#go').onclick=go; $('#pw').onkeydown=e=>{if(e.key==='Enter')go()};
+}
+
+/* ================= Inicio ================= */
+async function showHome(force){
+  if(force||!DB[S.g]){const ok=await run('Cargando…',reload);if(!ok&&!DB[S.g]){$('#app').innerHTML=`<div class="login"><p class="empty">No se pudo cargar la información.</p><button class="btn solid" id="rt">Reintentar</button><button class="btn ghost" id="lo">Salir</button></div>`;$('#rt').onclick=()=>showHome(true);$('#lo').onclick=logout;return}}
+  renderShell();
+}
+function logout(){PW='';ROL='admin';try{sessionStorage.removeItem('pw')}catch{}DB.f=DB.m=null;renderLogin()}
+function renderShell(){
+  $('#layer').innerHTML='';
+  $('#app').innerHTML=`<div class="bar">${isAdmin()?'<button id="rep">Ingresos</button>':''}<button id="ej">Ejercicios</button>${isAdmin()?'<button id="aj">Ajustes</button>':''}<button id="out">Salir</button></div>
+  <header><img src="logo.png" alt="Stay Safe by Christian Piña"></header>
+  <div class="seg"><button data-g="f" class="${S.g==='f'?'on':''}">Mujeres</button><button data-g="m" class="${S.g==='m'?'on':''}">Hombres</button></div>
+  <div class="wrap"><div id="hm"></div></div>
+  <button class="fab" id="add">+ Nueva persona</button>${DEMO?'<div class="demo">Demo con datos ficticios · no se guarda nada</div>':''}`;
+  $('#out').onclick=logout;
+  $('#ej').onclick=renderEjercicios;
+  if(isAdmin()){$('#rep').onclick=renderReport;$('#aj').onclick=renderAjustes}
+  $('#add').onclick=()=>clientForm();
+  $$('.seg button').forEach(b=>b.onclick=async()=>{S.g=b.dataset.g;S.q='';S.filter='todas';await showHome()});
+  renderList(true);
+}
+function renderList(full){
+  const L=D().clientes.map(c=>({c,s:status(c)}));
+  const live=L.filter(x=>x.s.k!=='arch');
+  const act=live.filter(x=>x.s.k==='ok'||x.s.k==='frozen').length, por=live.filter(x=>x.s.k==='warn'), ven=live.filter(x=>x.s.k==='bad');
+  const alerts=[...por,...ven].sort((a,b)=>a.s.days-b.s.days);
+  let f=L.filter(x=>S.filter==='arch'?x.s.k==='arch':S.filter==='todas'?x.s.k!=='arch':S.filter==='ok'?(x.s.k==='ok'||x.s.k==='frozen'):x.s.k===S.filter);
+  f=f.filter(x=>x.c.nombre.toLowerCase().includes(S.q.toLowerCase())).sort((a,b)=>a.s.days-b.s.days||a.c.nombre.localeCompare(b.c.nombre));
+  if(full){
+    $('#hm').innerHTML=`<div id="st"></div><div id="al"></div><input class="search" id="q" placeholder="Buscar persona…" value="${esc(S.q)}"><div class="filters">${[['todas','Todas'],['ok','Activas'],['warn','Por vencer'],['bad','Vencidas'],['arch','Archivadas']].map(([k,t])=>`<button data-f="${k}" class="${S.filter===k?'on':''}">${t}</button>`).join('')}</div><div id="ls"></div>`;
+    $('#q').oninput=e=>{S.q=e.target.value;renderList(false)};
+    $$('.filters button').forEach(b=>b.onclick=()=>{S.filter=b.dataset.f;renderList(true)});
+  }
+  $('#st').innerHTML=`<div class="stats"><div class="stat"><b>${act}</b><span>Activas</span></div><div class="stat"><b>${por.length}</b><span>Por vencer</span></div><div class="stat"><b>${ven.length}</b><span>Vencidas</span></div></div>`;
+  $('#al').innerHTML=alerts.length?`<div class="alert"><h3>Renovaciones pendientes</h3>${alerts.map(x=>`<div data-id="${x.c.id}"><span>${esc(x.c.nombre.split(' ').slice(0,2).join(' '))}</span><span>${x.s.k==='bad'?'Vencida':x.s.t}</span></div>`).join('')}</div>`:'';
+  $('#ls').innerHTML=f.length?f.map(x=>`<div class="client" data-id="${x.c.id}"><div class="av">${esc(x.c.nombre[0])}</div><div class="i"><b>${esc(x.c.nombre)}</b><span>${esc(x.s.pl&&x.s.pl.last.plan?x.s.pl.last.plan:x.c.lugar)} · ${monthsWith(x.c)} ${monthsWith(x.c)===1?'mes':'meses'}</span></div>${chip(x.s)}</div>`).join(''):'<div class="empty">Sin resultados</div>';
+  $$('[data-id]',$('#hm')).forEach(e=>e.onclick=()=>openClient(e.dataset.id));
+}
+
+/* ================= Piezas compartidas (persona y portal) ================= */
+function programsHTML(list,staff){
+  if(!list.length)return '<div class="empty">Sin rutinas ni dietas todavía</div>';
+  const by={};list.forEach(p=>(by[p.mes]=by[p.mes]||[]).push(p));
+  return Object.keys(by).sort().reverse().map(m=>`<label class="l">${monthLabel(m)}</label>`+by[m].map(p=>`<div class="pay"><div class="h"><span>${esc(p.titulo)}</span><span class="pill">${p.tipo==='alimentacion'?'Alimentación':'Entrenamiento'}</span></div><div class="prog">${linkify(p.contenido)}</div>${staff?`<div class="acts"><button class="x" data-pe="${p.id}">Editar</button><button class="x" data-pc="${p.id}">Copiar a este mes</button>${isAdmin()?`<button class="x" data-px="${p.id}">Eliminar</button>`:''}</div>`:''}</div>`).join('')).join('');
+}
+function progressHTML(ms,del){
+  ms=[...ms].sort((a,b)=>P(a.fecha)-P(b.fecha));
+  let sum='',chart='';
+  if(ms.length>=2)sum=MED.map(([k,l,u])=>{const v=ms.filter(m=>num(m[k])!==null);if(v.length<2)return'';const a=num(v[0][k]),b=num(v[v.length-1][k]),d=Math.round((b-a)*10)/10;return`<div class="delta"><span>${l}</span><span>${a} → ${b} ${u} <b>(${d>0?'+':''}${d})</b></span></div>`}).join('');
+  const wp=ms.filter(m=>num(m.peso)!==null);
+  if(wp.length>=2){
+    const W=320,H=140,pad=24,vals=wp.map(m=>num(m.peso)),mn=Math.min(...vals)-1,mx=Math.max(...vals)+1;
+    const t0=P(wp[0].fecha).getTime(),t1=P(wp[wp.length-1].fecha).getTime()||1;
+    const X=m=>pad+(t1===t0?0:(P(m.fecha).getTime()-t0)/(t1-t0))*(W-2*pad), Y=v=>H-pad-(v-mn)/(mx-mn)*(H-2*pad);
+    chart=`<div class="chart"><div class="hint" style="margin:0 0 6px">PESO (kg)</div><svg viewBox="0 0 ${W} ${H}"><polyline fill="none" stroke="#fff" stroke-width="2" points="${wp.map(m=>X(m)+','+Y(num(m.peso))).join(' ')}"/>${wp.map(m=>`<circle cx="${X(m)}" cy="${Y(num(m.peso))}" r="3.5" fill="#fff"/><text x="${X(m)}" y="${Y(num(m.peso))-9}" fill="#fff" font-size="10" text-anchor="middle">${num(m.peso)}</text>`).join('')}<text x="${pad}" y="${H-4}" fill="#9a9a9a" font-size="9">${fmt(wp[0].fecha)}</text><text x="${W-pad}" y="${H-4}" fill="#9a9a9a" font-size="9" text-anchor="end">${fmt(wp[wp.length-1].fecha)}</text></svg></div>`;
+  }
+  return `${chart}${sum?`<label class="l">Cambio desde el inicio</label>${sum}`:''}<label class="l">Registros</label>${[...ms].reverse().map(m=>`<div class="mrow"><span>${fmt(m.fecha)}</span><span style="color:var(--mut);text-align:right">${MED.filter(([k])=>num(m[k])!==null).map(([k,l,u])=>`${l} ${num(m[k])}${u==='%'?'%':''}`).join(' · ')}</span>${del&&isAdmin()?`<button class="x" data-dm="${m.id}">×</button>`:''}</div>`).join('')||'<div class="empty">Sin registros todavía</div>'}`;
+}
+const getPhoto=async(f,fetcher)=>cache[f.id]||(cache[f.id]=await fetcher(f));
+async function paintPhotos(all,fetcher){
+  const fs=all.filter(f=>f.vista===S.view).sort((a,b)=>P(a.fecha)-P(b.fecha)),box=$('#cmpbox'),sb=$('#selbox');if(!box)return;
+  if(!fs.length){sb.innerHTML='';box.innerHTML='<div class="empty">Aún no hay fotos de esta vista</div>';return}
+  const A=fs.find(f=>f.id===S.a)||fs[0], B=fs.find(f=>f.id===S.b)||fs[fs.length-1];
+  S.a=A.id;S.b=B.id;
+  const opts=sel=>fs.map(f=>`<option value="${f.id}" ${f.id===sel?'selected':''}>${fmt(f.fecha)}</option>`).join('');
+  sb.innerHTML=fs.length>1?`<div class="g2"><div><label class="l">Antes</label><select id="sa">${opts(A.id)}</select></div><div><label class="l">Después</label><select id="sb2">${opts(B.id)}</select></div></div>`:'';
+  if(fs.length>1){$('#sa').onchange=e=>{S.a=e.target.value;paintPhotos(all,fetcher)};$('#sb2').onchange=e=>{S.b=e.target.value;paintPhotos(all,fetcher)}}
+  const single=fs.length===1||A.id===B.id;
+  box.innerHTML=single
+   ?`<div class="cmp"><div class="ly" id="la"><div class="ph">Cargando…</div></div><span class="tag" style="left:10px">${fmt(A.fecha)}</span></div>${fs.length===1?'<p class="hint">Cuando haya otra sesión de fotos podrás compararlas.</p>':''}`
+   :`<div class="cmp" id="cmp"><div class="ly" id="la"><div class="ph">Cargando…</div></div><div class="ly" id="lb"></div><div class="line" id="ln"></div><div class="knob" id="kn">⇆</div><span class="tag" style="left:10px">ANTES · ${fmt(A.fecha)}</span><span class="tag" style="right:10px">DESPUÉS · ${fmt(B.fecha)}</span></div><p class="hint">Desliza sobre la foto para comparar.</p>`;
+  const put=async(f,id)=>{try{const u=await getPhoto(f,fetcher);const el=$(id);if(el)el.innerHTML=`<img src="${u}" alt="">`}catch{const el=$(id);if(el)el.innerHTML='<div class="ph">No se pudo cargar</div>'}};
+  const jobs=[put(A,'#la')]; if(!single)jobs.push(put(B,'#lb'));
+  if(!single){
+    const cmp=$('#cmp'),lb=$('#lb'),ln=$('#ln'),kn=$('#kn');
+    const set=p=>{S.slide=Math.max(0,Math.min(100,p));lb.style.clipPath=`inset(0 0 0 ${S.slide}%)`;ln.style.left=S.slide+'%';kn.style.left=S.slide+'%'};
+    set(S.slide);
+    const mv=e=>{const r=cmp.getBoundingClientRect();set((e.clientX-r.left)/r.width*100)};
+    cmp.onpointerdown=e=>{cmp.setPointerCapture(e.pointerId);mv(e);cmp.onpointermove=mv};
+    cmp.onpointerup=cmp.onpointercancel=()=>cmp.onpointermove=null;
+  }
+  await Promise.all(jobs);
+}
+const photosShell=up=>`<div class="views">${VIEWS.map(([v,t])=>`<button data-v="${v}" class="${S.view===v?'on':''}">${t}</button>`).join('')}</div><div id="selbox"></div><div id="cmpbox" style="margin-top:12px"></div>${up?'<button class="btn solid" id="newph">+ Subir sesión de fotos</button>':''}`;
+
+/* ================= Ficha de persona ================= */
+function openClient(id){S.id=id;S.tab='ficha';S.a=S.b=null;S.view='frente';renderClient()}
+function closeClient(){$('#layer').innerHTML='';renderList(false)}
+function portalUrl(token){return location.href.split('#')[0].split('?')[0]+'?v='+token}
+function renderClient(){
+  const c=cl(S.id),s=status(c);
+  const tabs=[['ficha','Ficha'],['pagos','Pagos'],['programa','Programa'],['fotos','Fotos'],['progreso','Progreso'],['notas','Notas']];
+  let body='';
+  const pl=D().planes.find(p=>s.pl&&p.nombre===s.pl.last.plan);
+  if(S.tab==='ficha'){
+    const z=pausedNow(c);
+    body=`<div class="sec"><div class="stats" style="margin-top:6px"><div class="stat"><b>${monthsWith(c)}</b><span>Meses</span></div><div class="stat"><b>${paysOf(c.id).length}</b><span>Pagos</span></div><div class="stat"><b>${s.end&&s.k!=='bad'?s.days:'—'}</b><span>Días restantes</span></div></div>
+    <div class="row"><span>Plan actual</span><span>${esc(s.pl&&s.pl.last.plan||'—')}</span></div>
+    ${z?`<div class="row"><span>Congelada</span><span>hasta ${fmt(iso(new Date(P(z.inicio).getTime()+z.dias*DAY)))} · ${esc(z.motivo||'')}</span></div>`:''}
+    ${FIELDS.slice(1).map(([k,l])=>`<div class="row"><span>${l}</span><span>${esc(c[k]===''||c[k]==null?'—':c[k]+(UNITS[k]?UNITS[k]:''))}</span></div>`).join('')}
+    <div class="row"><span>Entrenamiento</span><span>${esc(c.lugar)}</span></div>
+    <div class="row"><span>Registro</span><span>${c.creado?fmt(c.creado):'—'}</span></div>
+    <button class="btn solid" id="edit">Editar ficha</button>
+    ${pl&&pl.congelable==='SI'?'<button class="btn" id="freeze">Congelar plan (viaje o lesión)</button>':''}
+    <button class="btn" id="portal">Enlace de avance para ${esc(c.nombre.split(' ')[0])}</button>
+    <button class="btn ghost" id="arch">${c.activo==='NO'?'Reactivar persona':'Archivar persona'}</button></div>`;
+  }
+  if(S.tab==='pagos'){
+    const pays=[...paysOf(c.id)].sort((a,b)=>P(b.fecha)-P(a.fecha)||P(b.fin)-P(a.fin));
+    let prog='';
+    if(s.pl){
+      const cur=s.pl.last,tot=Math.max(1,(s.pl.end-P(cur.inicio))/DAY),used=Math.min(tot,Math.max(0,(today-P(cur.inicio))/DAY));
+      prog=`<div class="pay cur"><div class="h"><span>${esc(cur.plan||'Plan actual')}</span>${chip(s)}</div><div class="bar2"><i style="width:${Math.round(used/tot*100)}%"></i></div><div class="s">${fmt(cur.inicio)} → ${fmt(iso(s.end))}${s.pl.extra?` · incluye ${s.pl.extra} d de pausa`:''}</div></div>`;
+    }
+    const zs=D().pausas.filter(z=>z.clienteId===c.id).sort((a,b)=>P(b.inicio)-P(a.inicio));
+    body=`<div class="sec">${prog}<button class="btn solid" id="newpay">+ Registrar pago</button><a class="btn" href="https://wa.me/${waNum(c.telefono)}?text=${encodeURIComponent(cobroMsg(c))}" target="_blank" rel="noopener">Enviar cobro por WhatsApp</a>
+    <label class="l">Historial completo</label>${pays.map(p=>`<div class="pay"><div class="h"><span>${money(p.monto)}</span><span style="font-weight:400;font-size:12px">${esc(p.metodo)}</span></div><div class="s">${esc(p.plan||'Sin plan')} · pagó ${fmt(p.fecha)}<br>cubre ${fmt(p.inicio)} → ${fmt(p.fin)}</div>${isAdmin()?`<div class="acts"><button class="x" data-del="${p.id}">Eliminar</button></div>`:''}</div>`).join('')||'<div class="empty">Sin pagos</div>'}
+    <div class="row" style="margin-top:14px"><span>Total pagado</span><span><b>${money(pays.reduce((a,p)=>a+Number(p.monto),0))}</b></span></div>
+    ${zs.length?`<label class="l">Pausas</label>${zs.map(z=>`<div class="mrow"><span>${fmt(z.inicio)} · ${z.dias} d</span><span style="color:var(--mut)">${esc(z.motivo||'')}</span>${isAdmin()?`<button class="x" data-dz="${z.id}">×</button>`:''}</div>`).join('')}`:''}</div>`;
+  }
+  if(S.tab==='programa'){
+    const list=D().programas.filter(p=>p.clienteId===c.id);
+    body=`<div class="sec"><button class="btn solid" id="newprog" style="margin-top:6px">+ Nueva rutina o dieta</button>${programsHTML(list,true)}</div>`;
+  }
+  if(S.tab==='fotos')body=`<div class="sec">${photosShell(true)}</div>`;
+  if(S.tab==='progreso')body=`<div class="sec"><button class="btn solid" id="newmed" style="margin-top:6px">+ Registrar medidas</button>${progressHTML(D().medidas.filter(m=>m.clienteId===c.id),true)}</div>`;
+  if(S.tab==='notas'){
+    const ns=D().notas.filter(n=>n.clienteId===c.id).sort((a,b)=>P(b.fecha)-P(a.fecha));
+    body=`<div class="sec"><label class="l">Nueva observación</label><textarea id="nt" placeholder="Escribe un comentario…"></textarea><button class="btn solid" id="addnote">Guardar nota</button>${ns.map(n=>`<div class="note"><small>${fmt(n.fecha)}</small><p>${esc(n.texto)}</p></div>`).join('')||'<div class="empty">Sin notas</div>'}</div>`;
+  }
+  $('#layer').innerHTML=`<div class="panel"><div class="top"><button id="back">←</button><h2>${esc(c.nombre)}</h2>${chip(s)}</div><div class="tabs">${tabs.map(([k,t])=>`<button data-t="${k}" class="${S.tab===k?'on':''}">${t}</button>`).join('')}</div>${body}</div>`;
+  const L=$('#layer');
+  $('#back',L).onclick=closeClient;
+  $$('[data-t]',L).forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;renderClient()});
+  const on=(id,fn)=>{const e=$(id,L);if(e)e.onclick=fn};
+  on('#edit',()=>clientForm(c));
+  on('#freeze',()=>pauseForm(c));
+  on('#portal',()=>portalSheet(c));
+  on('#arch',()=>confirmBox(c.activo==='NO'?'¿Reactivar a esta persona?':'¿Archivar a esta persona? Su historial se conserva y puedes reactivarla cuando quieras.',async()=>{if(await mutate('Guardando…','saveCliente',{cliente:{id:c.id,activo:c.activo==='NO'?'SI':'NO'}}))renderClient()}));
+  on('#newpay',()=>payForm(c));
+  $$('[data-del]',L).forEach(b=>b.onclick=()=>confirmBox('¿Eliminar este pago? Esta acción no se puede deshacer.',async()=>{if(await mutate('Eliminando…','delPago',{id:b.dataset.del}))renderClient()}));
+  $$('[data-dz]',L).forEach(b=>b.onclick=()=>confirmBox('¿Eliminar esta pausa?',async()=>{if(await mutate('Eliminando…','delPausa',{id:b.dataset.dz}))renderClient()}));
+  on('#addnote',async()=>{const t=$('#nt',L).value.trim();if(!t)return;if(await mutate('Guardando…','addNota',{nota:{clienteId:c.id,fecha:iso(today),texto:t}}))renderClient()});
+  on('#newmed',()=>medForm(c));
+  $$('[data-dm]',L).forEach(b=>b.onclick=()=>confirmBox('¿Eliminar este registro de medidas?',async()=>{if(await mutate('Eliminando…','delMedida',{id:b.dataset.dm}))renderClient()}));
+  on('#newprog',()=>progForm(c));
+  $$('[data-pe]',L).forEach(b=>b.onclick=()=>progForm(c,D().programas.find(p=>p.id===b.dataset.pe)));
+  $$('[data-pc]',L).forEach(b=>b.onclick=()=>progForm(c,{...D().programas.find(p=>p.id===b.dataset.pc),id:'',mes:iso(today).slice(0,7)}));
+  $$('[data-px]',L).forEach(b=>b.onclick=()=>confirmBox('¿Eliminar este programa?',async()=>{if(await mutate('Eliminando…','delPrograma',{id:b.dataset.px}))renderClient()}));
+  $$('[data-v]',L).forEach(b=>b.onclick=()=>{S.view=b.dataset.v;S.a=S.b=null;renderClient()});
+  on('#newph',()=>photoForm(c));
+  if(S.tab==='fotos')paintPhotos(D().fotos.filter(f=>f.clienteId===c.id),f=>api('getFoto',{g:KEY[S.g],id:f.id}));
+}
+
+/* ================= Enlace de avance (portal) ================= */
+function portalSheet(c){
+  let tk=null;
+  sheet('Enlace de avance',()=>`<p class="hint" style="margin-top:6px">${esc(c.nombre)} podrá ver <b>solo su información</b>: rutina, dieta, medidas y fotos. No ve pagos ni a otras personas. Quien tenga el enlace puede verlo, así que envíaselo solo a ella.</p>${tk?`<label class="l">Enlace</label><textarea readonly id="lk" style="min-height:70px;font-size:12px">${esc(portalUrl(tk))}</textarea><a class="btn solid" target="_blank" rel="noopener" href="https://wa.me/${waNum(c.telefono)}?text=${encodeURIComponent('Hola '+c.nombre.split(' ')[0]+' 👋, aquí puedes ver tu avance, tu rutina y tu plan de alimentación: '+portalUrl(tk))}">Enviar por WhatsApp</a><button class="btn" id="seeas">Ver lo que ve ${esc(c.nombre.split(' ')[0])}</button><button class="btn ghost" id="regen">Generar enlace nuevo (el anterior deja de funcionar)</button>`:'<div class="empty">Cargando…</div>'}`,(d,paint)=>{
+    if(!tk&&!d._l){d._l=1;run('Generando enlace…',async()=>{tk=(await api('tokenCliente',{g:KEY[S.g],id:c.id})).token;await reload()}).then(()=>paint())}
+    const sa=$('#seeas',d);if(sa)sa.onclick=()=>renderPortal(tk,true);
+    const rg=$('#regen',d);if(rg)rg.onclick=()=>confirmBox('El enlace anterior dejará de funcionar. ¿Generar uno nuevo?',()=>run('Generando…',async()=>{tk=(await api('tokenCliente',{g:KEY[S.g],id:c.id,regen:true})).token;await reload()}).then(()=>paint()));
+  });
+}
+async function renderPortal(token,embedded){
+  let d;
+  const ok=await run('Cargando…',async()=>{d=await api('portal',{token})});
+  if(!ok){if(!embedded)$('#app').innerHTML='<div class="login"><img src="logo.png" alt=""><p class="empty">Este enlace no es válido o ya no está activo.</p></div>';return}
+  S.view='frente';S.a=S.b=null;
+  let tab='programa';
+  const host=embedded?document.createElement('div'):$('#app');
+  if(embedded){host.className='panel top2';document.body.appendChild(host)}
+  const fetcher=f=>api('portalFoto',{token,id:f.id});
+  const draw=()=>{
+    const ps=d.programas;
+    const cur=iso(today).slice(0,7);
+    let body='';
+    if(tab==='programa')body=programsHTML([...ps].sort((a,b)=>a.mes<b.mes?-1:1),false).replace('Sin rutinas ni dietas todavía','Tu entrenador aún no ha cargado tu programa');
+    if(tab==='progreso')body=progressHTML(d.medidas,false);
+    if(tab==='fotos')body=photosShell(false);
+    host.innerHTML=`${embedded?'<div class="top"><button id="pb">←</button><h2>Vista de la persona</h2></div>':''}<div style="max-width:520px;margin:0 auto;padding-bottom:40px"><header style="padding-top:${embedded?14:22}px"><img src="logo.png" alt="Stay Safe by Christian Piña"></header><div class="sec"><h2 style="font-weight:300;font-size:26px;margin-top:8px">${esc(d.nombre)}</h2>${d.objetivo?`<p class="hint">Objetivo: ${esc(d.objetivo)}</p>`:''}${d.vence?`<div class="row" style="margin-top:12px"><span>${esc(d.plan||'Tu plan')}</span><span>hasta ${fmt(d.vence)}</span></div>`:''}</div><div class="tabs">${[['programa','Mi programa'],['progreso','Mi progreso'],['fotos','Mis fotos']].map(([k,t])=>`<button data-t="${k}" class="${tab===k?'on':''}">${t}</button>`).join('')}</div><div class="sec">${body}${d.negocio&&d.negocio.nombre?`<p class="hint" style="margin-top:30px;text-align:center">${esc(d.negocio.nombre)}${d.negocio.instagram?' · @'+esc(d.negocio.instagram):''}${d.negocio.telefono?'<br>'+esc(d.negocio.telefono):''}</p>`:''}</div></div>`;
+    if(embedded)$('#pb',host).onclick=()=>host.remove();
+    $$('[data-t]',host).forEach(b=>b.onclick=()=>{tab=b.dataset.t;draw()});
+    $$('[data-v]',host).forEach(b=>b.onclick=()=>{S.view=b.dataset.v;S.a=S.b=null;draw()});
+    if(tab==='fotos')paintPhotos(d.fotos,fetcher);
+  };
+  draw();
+}
+
+/* ================= Fotos: subida ================= */
+const compress=(file,max=1100,q=.8)=>new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),cv=document.createElement('canvas');cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(u);res(cv.toDataURL('image/jpeg',q))};img.onerror=()=>rej(new Error('No se pudo leer la imagen'));img.src=u});
+function photoForm(c){
+  modal('Sesión de fotos',`${field('pf','Fecha','date',iso(today))}${VIEWS.map(([v,t])=>`<label class="l">${t}</label><input type="file" accept="image/*" data-pv="${v}">`).join('')}<p class="hint">Puedes subir solo las vistas que tengas. Las fotos se comprimen y se guardan en una carpeta privada.</p>`,async d=>{
+    const fecha=$('#pf',d).value,files=$$('[data-pv]',d).filter(i=>i.files[0]);
+    if(!fecha||!files.length){toast('Elige la fecha y al menos una foto');return false}
+    return run('Subiendo fotos…',async()=>{
+      let n=0;
+      for(const i of files){n++;busy(`Subiendo foto ${n} de ${files.length}…`);const data=await compress(i.files[0]);await api('addFoto',{g:KEY[S.g],clienteId:c.id,fecha,vista:i.dataset.pv,data})}
+      await reload();
+    }).then(ok=>{if(ok)renderClient();return ok});
+  },'Subir');
+}
+
+/* ================= Formularios ================= */
+function clientForm(c){
+  const v=k=>c&&c[k]!==undefined&&c[k]!==null?c[k]:'';
+  modal(c?'Editar ficha':'Nueva persona · '+(S.g==='f'?'Mujeres':'Hombres'),
+    FIELDS.map(([k,l,t])=>field('f_'+k,l,t,v(k))).join('')+`<label class="l">Entrenamiento</label><select id="f_lugar"><option ${c&&c.lugar==='Gym'?'selected':''}>Gym</option><option ${c&&c.lugar==='Casa'?'selected':''}>Casa</option><option ${c&&c.lugar==='Presencial'?'selected':''}>Presencial</option></select>`+(c?'':`<label class="l">Comentarios y observaciones</label><textarea id="f_co"></textarea>`),
+    async d=>{
+      const o={};FIELDS.forEach(([k])=>o[k]=$('#f_'+k,d).value.trim());
+      o.lugar=$('#f_lugar',d).value;
+      if(!o.nombre){toast('Escribe el nombre');return false}
+      if(c)o.id=c.id;
+      let newId=null;
+      const ok=await run('Guardando…',async()=>{
+        const r=await api('saveCliente',{g:KEY[S.g],cliente:o});newId=r.id;
+        const co=c?'':$('#f_co',d).value.trim();
+        if(co)await api('addNota',{g:KEY[S.g],nota:{clienteId:r.id,fecha:iso(today),texto:co}});
+        await reload();
+      });
+      if(ok){if(c)renderClient();else{renderList(false);openClient(newId)}}
+      return ok;
+    });
+}
+function payForm(c){
+  const pls=D().planes.filter(p=>p.activo!=='NO'),pl=planOf(c),last=pl&&pl.last;
+  const start=pl&&pl.end>=today?pl.end:today;
+  const sel=pls.find(p=>last&&p.nombre===last.plan)||pls[0];
+  const d=modal('Registrar pago',`<label class="l">Plan</label><select id="pp">${pls.map(p=>`<option value="${p.id}" ${sel&&p.id===sel.id?'selected':''}>${esc(p.nombre)} · ${money(p.precio)}</option>`).join('')}<option value="">Otro</option></select>
+  ${field('pm','Monto','number',sel?sel.precio:'')}<label class="l">Método</label><select id="pt"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option></select><div class="g2"><div>${field('ps','Inicio del plan','date',iso(start))}</div><div>${field('pd','Duración (días)','number',sel?sel.dias:30)}</div></div><div class="chips">${[[30,'Mensual'],[60,'Bimestral'],[90,'Trimestral'],[180,'Semestral']].map(([n,t])=>`<button data-n="${n}">${t}</button>`).join('')}</div><p class="hint" id="pe"></p>`,async d=>{
+    const s=$('#ps',d).value,n=parseInt($('#pd',d).value),m=num($('#pm',d).value),pid=$('#pp',d).value,pn=pid?D().planes.find(p=>p.id===pid).nombre:'Otro';
+    if(!s||!n||!m){toast('Completa monto, fecha y duración');return false}
+    return mutate('Guardando…','addPago',{pago:{clienteId:c.id,fecha:iso(today),monto:m,metodo:$('#pt',d).value,inicio:s,fin:iso(new Date(P(s).getTime()+n*DAY)),plan:pn}}).then(ok=>{if(ok)renderClient();return ok});
+  });
+  const upd=()=>{const s=$('#ps',d).value,n=parseInt($('#pd',d).value);$('#pe',d).textContent=s&&n?'El plan termina el '+fmt(iso(new Date(P(s).getTime()+n*DAY))):''};
+  $('#pp',d).onchange=e=>{const p=D().planes.find(x=>x.id===e.target.value);if(p){$('#pm',d).value=p.precio;$('#pd',d).value=p.dias}upd()};
+  $$('[data-n]',d).forEach(b=>b.onclick=()=>{$('#pd',d).value=b.dataset.n;upd()});
+  $('#ps',d).oninput=upd;$('#pd',d).oninput=upd;upd();
+}
+function pauseForm(c){
+  modal('Congelar plan',`${field('zi','Desde','date',iso(today))}${field('zd','Días de pausa','number',15,'inputmode="numeric"')}<label class="l">Motivo</label><select id="zm"><option>Viaje</option><option>Lesión</option><option>Otro</option></select><p class="hint">Los días de pausa se suman al final del plan, así que no pierde lo que pagó.</p>`,async d=>{
+    const i=$('#zi',d).value,n=parseInt($('#zd',d).value);
+    if(!i||!(n>=1)){toast('Escribe la fecha y los días');return false}
+    return mutate('Guardando…','addPausa',{pausa:{clienteId:c.id,inicio:i,dias:n,motivo:$('#zm',d).value}}).then(ok=>{if(ok)renderClient();return ok});
+  });
+}
+function progForm(c,p){
+  const o=p||{};
+  modal(o.id?'Editar programa':'Nueva rutina o dieta',`<label class="l">Tipo</label><select id="gt"><option value="entrenamiento" ${o.tipo!=='alimentacion'?'selected':''}>Entrenamiento</option><option value="alimentacion" ${o.tipo==='alimentacion'?'selected':''}>Alimentación</option></select>${field('gm','Mes','month',o.mes||iso(today).slice(0,7))}${field('gti','Título','text',o.titulo||'','placeholder="Ej. Rutina A · Pierna"')}<label class="l">Contenido</label><textarea id="gc" style="min-height:220px" placeholder="Ejercicios, series, comidas… Puedes pegar enlaces de video.">${esc(o.contenido||'')}</textarea><p class="hint">Los enlaces de YouTube o Drive se vuelven tocables.</p>`,async d=>{
+    const pr={clienteId:c.id,tipo:$('#gt',d).value,mes:$('#gm',d).value,titulo:$('#gti',d).value.trim(),contenido:$('#gc',d).value.trim()};
+    if(o.id)pr.id=o.id;
+    if(!pr.titulo||!pr.mes){toast('Escribe el título y el mes');return false}
+    return mutate('Guardando…','savePrograma',{programa:pr}).then(ok=>{if(ok)renderClient();return ok});
+  });
+}
+function medForm(c){
+  modal('Registrar medidas',`${field('mf','Fecha','date',iso(today))}<div class="g2">${MED.map(([k,l,u])=>`<div>${field('m_'+k,`${l} (${u})`,'number')}</div>`).join('')}</div>`,async d=>{
+    const m={clienteId:c.id,fecha:$('#mf',d).value};
+    MED.forEach(([k])=>{const x=num($('#m_'+k,d).value);m[k]=x===null?'':x});
+    if(!m.fecha||MED.every(([k])=>m[k]==='')){toast('Escribe al menos una medida');return false}
+    return mutate('Guardando…','addMedida',{medida:m}).then(ok=>{if(ok)renderClient();return ok});
+  });
+}
+
+/* ================= Ejercicios ================= */
+function renderEjercicios(){
+  let q='';
+  sheet('Ejercicios',()=>{
+    const L=D().ejercicios.filter(x=>(x.nombre+' '+x.grupo).toLowerCase().includes(q.toLowerCase())).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    return `<button class="btn solid" id="ne" style="margin-top:6px">+ Nuevo ejercicio</button><input class="search" id="eq" placeholder="Buscar ejercicio o grupo…" style="margin-top:14px" value="${esc(q)}">${L.map(x=>`<div class="pay"><div class="h"><span>${esc(x.nombre)}</span><span class="pill">${esc(x.grupo||'—')}</span></div><div class="acts">${x.enlace?`<a class="x" href="${esc(x.enlace)}" target="_blank" rel="noopener">Ver video</a><a class="x" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(x.nombre+': '+x.enlace)}">Enviar por WhatsApp</a>`:'<span class="s">Sin enlace</span>'}<button class="x" data-ee="${x.id}">Editar</button>${isAdmin()?`<button class="x" data-ex="${x.id}">Eliminar</button>`:''}</div></div>`).join('')||'<div class="empty">Sin ejercicios</div>'}<p class="hint">Sube tus videos a YouTube como «no listado» (o a Drive) y pega aquí el enlace.</p>`;
+  },(d,paint)=>{
+    const form=x=>modal(x?'Editar ejercicio':'Nuevo ejercicio',`${field('en','Nombre','text',x?x.nombre:'')}${field('eg','Grupo muscular','text',x?x.grupo:'','placeholder="Pierna, espalda, core…"')}${field('el','Enlace del video','url',x?x.enlace:'','placeholder="https://…"')}`,async m=>{
+      const e={nombre:$('#en',m).value.trim(),grupo:$('#eg',m).value.trim(),enlace:$('#el',m).value.trim()};if(x)e.id=x.id;
+      if(!e.nombre){toast('Escribe el nombre');return false}
+      return run('Guardando…',async()=>{await api('saveEjercicio',{g:KEY[S.g],ejercicio:e});await reload()}).then(ok=>{if(ok)paint();return ok});
+    });
+    $('#ne',d).onclick=()=>form();
+    $('#eq',d).oninput=e=>{q=e.target.value;paint();const i=$('#eq',d);i.focus();i.setSelectionRange(q.length,q.length)};
+    $$('[data-ee]',d).forEach(b=>b.onclick=()=>form(D().ejercicios.find(x=>x.id===b.dataset.ee)));
+    $$('[data-ex]',d).forEach(b=>b.onclick=()=>confirmBox('¿Eliminar este ejercicio?',()=>run('Eliminando…',async()=>{await api('delEjercicio',{g:KEY[S.g],id:b.dataset.ex});await reload()}).then(()=>paint())));
+  });
+}
+
+/* ================= Ajustes (solo Christian) ================= */
+function renderAjustes(){
+  sheet('Ajustes',()=>{
+    const f=cfg();
+    return `<div class="sh" style="margin-top:6px">Planes y precios</div>${D().planes.map(p=>`<div class="pay"><div class="h"><span>${esc(p.nombre)}${p.activo==='NO'?' <span class="pill">oculto</span>':''}</span><span>${money(p.precio)}</span></div><div class="s">${p.dias} días${p.congelable==='SI'?' · se puede congelar':''}</div><div class="acts"><button class="x" data-pe="${p.id}">Editar</button></div></div>`).join('')}<button class="btn" id="np">+ Nuevo plan</button>
+    <div class="sh">Mi negocio</div>${field('c_negocio','Nombre del negocio','text',f.negocio)}${field('c_telefono','Teléfono','tel',f.telefono)}${field('c_correo','Correo','email',f.correo)}${field('c_instagram','Instagram personal','text',f.instagram)}${field('c_instagram_trabajo','Instagram del negocio','text',f.instagram_trabajo)}
+    <div class="sh">Datos de pago</div><p class="hint">Se incluyen en el mensaje de cobro por WhatsApp.</p>${field('c_banco','Banco','text',f.banco)}${field('c_titular','Titular','text',f.titular)}${field('c_cuenta','Cuenta, tarjeta o CLABE','text',f.cuenta)}<label class="l">Mensaje final del cobro (opcional)</label><textarea id="c_mensaje_extra">${esc(f.mensaje_extra||'')}</textarea><button class="btn solid" id="sc">Guardar datos</button>`;
+  },(d,paint)=>{
+    const planForm=p=>modal(p?'Editar plan':'Nuevo plan',`${field('pn','Nombre','text',p?p.nombre:'')}<div class="g2"><div>${field('pr','Precio','number',p?p.precio:'')}</div><div>${field('pdias','Duración (días)','number',p?p.dias:30)}</div></div><label class="l">¿Se puede congelar?</label><select id="pcg"><option value="NO" ${p&&p.congelable==='SI'?'':'selected'}>No</option><option value="SI" ${p&&p.congelable==='SI'?'selected':''}>Sí (viaje o lesión)</option></select>${p?`<label class="l">Visible al registrar pagos</label><select id="pac"><option value="SI" ${p.activo==='NO'?'':'selected'}>Sí</option><option value="NO" ${p.activo==='NO'?'selected':''}>No (ocultar)</option></select>`:''}<p class="hint">Cambiar el precio no modifica pagos ya registrados.</p>`,async m=>{
+      const o={nombre:$('#pn',m).value.trim(),precio:num($('#pr',m).value),dias:parseInt($('#pdias',m).value)||30,congelable:$('#pcg',m).value};
+      if(p){o.id=p.id;o.activo=$('#pac',m).value}
+      if(!o.nombre||o.precio===null){toast('Escribe nombre y precio');return false}
+      return run('Guardando…',async()=>{await api('savePlan',{g:KEY[S.g],plan:o});await reload()}).then(ok=>{if(ok)paint();return ok});
+    });
+    $('#np',d).onclick=()=>planForm();
+    $$('[data-pe]',d).forEach(b=>b.onclick=()=>planForm(D().planes.find(x=>x.id===b.dataset.pe)));
+    $('#sc',d).onclick=()=>{const c={};['negocio','telefono','correo','instagram','instagram_trabajo','banco','titular','cuenta','mensaje_extra'].forEach(k=>c[k]=$('#c_'+k,d).value.trim());run('Guardando…',async()=>{await api('saveConfig',{g:KEY[S.g],config:c});await reload()}).then(ok=>{if(ok)toast('Datos guardados')})};
+  });
+}
+
+/* ================= Ingresos (solo Christian) ================= */
+function renderReport(){
+  const pagos=D().pagos,ym=s=>String(s).slice(0,7);
+  const now=ym(iso(today)),prev=ym(iso(new Date(today.getFullYear(),today.getMonth()-1,1)));
+  const by={};pagos.forEach(p=>{const k=ym(p.fecha);by[k]=by[k]||{t:0,n:0};by[k].t+=Number(p.monto);by[k].n++});
+  const months=Array.from({length:6},(_,i)=>{const d=new Date(today.getFullYear(),today.getMonth()-(5-i),1);return{k:ym(iso(d)),l:d.toLocaleDateString('es-MX',{month:'short'})}});
+  const mx=Math.max(1,...months.map(m=>(by[m.k]||{t:0}).t));
+  const total=pagos.reduce((a,p)=>a+Number(p.monto),0);
+  const live=D().clientes.map(c=>({c,s:status(c)})).filter(x=>x.s.k!=='arch');
+  const soon=live.filter(x=>x.s.k!=='bad'&&x.s.k!=='frozen'&&x.s.days<=30).sort((a,b)=>a.s.days-b.s.days);
+  const lastAmt=c=>{const p=planOf(c);return p?Number(p.last.monto):0};
+  const expected=soon.reduce((a,x)=>a+lastAmt(x.c),0);
+  const byPlan={};pagos.filter(p=>ym(p.fecha)===now).forEach(p=>{const k=p.plan||'Sin plan';byPlan[k]=byPlan[k]||{t:0,n:0};byPlan[k].t+=Number(p.monto);byPlan[k].n++});
+  const rows=Object.keys(by).sort().reverse().map(k=>`<div class="row"><span>${monthLabel(k)}</span><span>${money(by[k].t)} · ${by[k].n} ${by[k].n===1?'pago':'pagos'}</span></div>`).join('');
+  sheet('Ingresos · '+(S.g==='f'?'Mujeres':'Hombres'),()=>`<div class="stats" style="margin-top:10px"><div class="stat"><b style="font-size:20px">${money((by[now]||{t:0}).t)}</b><span>Este mes</span></div><div class="stat"><b style="font-size:20px">${money((by[prev]||{t:0}).t)}</b><span>Mes pasado</span></div><div class="stat"><b style="font-size:20px">${money(total)}</b><span>Histórico</span></div></div>
+  <div class="bars">${months.map(m=>{const t=(by[m.k]||{t:0}).t;return`<div><small>${t?Math.round(t/100)/10+'k':''}</small><i style="height:${Math.round(t/mx*100)}%"></i></div>`}).join('')}</div><div class="lab">${months.map(m=>`<span>${m.l}</span>`).join('')}</div>
+  <label class="l">Este mes por plan</label>${Object.keys(byPlan).map(k=>`<div class="row"><span>${esc(k)}</span><span>${money(byPlan[k].t)} · ${byPlan[k].n}</span></div>`).join('')||'<div class="empty">Sin pagos este mes</div>'}
+  <label class="l">Renovaciones próximos 30 días${soon.length?' · esperado '+money(expected):''}</label>${soon.map(x=>`<div class="mrow"><span>${esc(x.c.nombre)}</span><span style="color:var(--mut)">${x.s.days===0?'hoy':'en '+x.s.days+' d'} · ${money(lastAmt(x.c))}</span></div>`).join('')||'<div class="empty">Ninguna por ahora</div>'}
+  <label class="l">Por mes</label>${rows||'<div class="empty">Sin pagos registrados</div>'}`,()=>{});
+}
+
+/* ================= Inicio de la app ================= */
+(async function(){
+  const tk=new URLSearchParams(location.search).get('v');
+  if(tk){return renderPortal(tk,false)}
+  let saved='';try{saved=sessionStorage.getItem('pw')||''}catch{}
+  if(saved&&!DEMO){PW=saved;busy('Entrando…');try{const r=await api('login');ROL=r.rol||'admin';busy();return showHome(true)}catch{busy();PW=''}}
+  renderLogin();
+})();
+</script>
+</body>
+</html>
