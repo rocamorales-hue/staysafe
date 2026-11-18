@@ -56,3 +56,10 @@ archivar a la persona también lo desactiva.
 - Cambiar contraseñas: edita las constantes y vuelve a ejecutar `configurar`.
 - Con `API_URL` vacío la app corre en modo demo (datos ficticios; contraseña `asistente` entra como asistente).
 - El dominio propio se agrega después en Netlify/Cloudflare sin rehacer nada.
+
+## Instalar en iPhone (como app)
+1. Abre la dirección de la app en **Safari**.
+2. Toca el botón Compartir → **Agregar a inicio** → **Agregar**.
+3. Ábrela desde el ícono: se ve a pantalla completa, sin barras de Safari, y recuerda la sesión.
+Al subir una versión nueva, sube también `sw.js`. Si en el iPhone no se ve el cambio, cierra la app deslizando hacia arriba y vuelve a abrirla.
+El enlace de avance de cada cliente también se puede agregar a inicio y abre directo su progreso.
